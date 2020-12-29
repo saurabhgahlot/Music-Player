@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Music Player</title>
+    <link
+     rel="stylesheet"
+     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css"
+    integrity="sha512-PgQMlq+nqFLV4ylk1gwUOgm6CtIIXkKwaIHp/PAIWHzig/lKZSEGKEysh0TCVbHJXCLN7WetD8TFecIky75ZfQ=="
+    crossorigin="anonymous" />
+    <link rel="stylesheet" href="style.css">
+</head>  
+<body>
+    <div class="main_div">
+        <div class="music_container">
+            <h2 id="title">paani</h2>
+            <h3 id="artist">yuvraj hans</h3>
+            <div class="img_container">
+              <img src="images/1.jpg" alt="photo">
+            </div>
+            <audio src="music/1.mp3"></audio>
+
+            <!--progress bar-->
+            <div class="progressbar_container" id="progress_container">
+             <div class="progress_duration_meter">
+                 <div id="current_time">
+                     0:00
+                 </div>
+                 <div id="duration"> 3:05</div>
+             </div>
+             <div class="progress_div" id="progress_div">
+                 <div class="progress" id="progress"></div>
+             </div>
+            </div>
+
+            <!--controls-->
+            <div class="music_controls">
+                <i class="fas fa-backward" id="prev" title="Previous"></i>
+                <i class="fas fa-play main_button" id="play" title="Play"></i>
+                <i class="fas fa-forward" id="next" title="Next"></i>  
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    const music = document.querySelector("audio");
+    const play = document.getElementById("play");
+    const img = document.querySelector("img");
+    const artist = document.getElementById("artist");
+    const title = document.getElementById("title");
+    const prev = document.getElementById("prev");
+    const next = document.getElementById("next");
+    let progress = document.getElementById("progress");
+    let total_duration = document.getElementById("duration");
+    let current_time = document.getElementById("current_time");
+    const progress_div = document.getElementById("progress_div");
+
+    const songs = [{
+        name: "1",
+        title: "paani",
+        artist: "yuvraj hans" 
+    },
+    {
+        name: "2",
+        title: "sad sale",
+        artist: "himmat sanshu" 
+    },
+    {
+        name: "3",
+        title: "teeje week",
+        artist: "jordan sandhu" 
+    }
+    ]
+    
+    let isPlaying = false;
+  //for play
+    const playMusic = () => {
+        music.play();
+        isPlaying = true;
+        play.classList.replace('fa-play', 'fa-pause');
+        img.classList.add("anime");
+    };
+  //for pause
+    const pauseMusic =  () => {
+        music.pause();
+        isPlaying = false;
+        play.classList.replace('fa-pause', 'fa-play');
+        img.classList.remove("anime");
+    };
+    play.addEventListener('click', ()=> {
+        isPlaying ? pauseMusic() : playMusic();
+    });
+    // changing the music data
+    const loadSong = (songs) => {
+        title.textContent=songs.title;
+        artist.textContent=songs.artist;
+        music.src = "music/" + songs.name + ".mp3";
+        img.src = "images/" + songs.name + ".jpg";
+    }
+   songIndex = 0;
+   
+   const nextSong = () => {
+       songIndex = (songIndex+1)%songs.length;
+       loadSong(songs[songIndex]);
+       playMusic();
+   };
+
+   const prevSong = () => {
+       songIndex = (songIndex-1 + songs.length)%songs.length;
+       loadSong(songs[songIndex]);
+       playMusic();
+   };
+   //progrss js work
+   music.addEventListener('timeupdate', (event)=>{
+    // console.log(event);
+     const {currentTime, duration} = event.srcElement;
+     let progress_time = (currentTime/duration)*100;
+    
+    progress.style.width = `${progress_time}%`;
+    
+    //music duration update
+     let min_duration = Math.floor(duration/60);
+     let sec_duration = Math.floor(duration%60); 
+     if(sec_duration<10){
+         sec_duration = `0${sec_duration}`;
+     } 
+     if(duration){
+     total_duration.textContent= `${min_duration}:${sec_duration}`;
+   }
+   let min_curr = Math.floor(currentTime/60);
+     let sec_curr = Math.floor(currentTime%60); 
+     if(sec_curr<10){
+         sec_curr=`0${sec_curr}`;
+     }
+     if(currentTime){
+     current_time.textContent= `${min_curr}:${sec_curr}`;
+   }
+
+  })
+    //progress onclick 
+
+    progress_div.addEventListener('click', (event)=>{
+        const {duration} = music;
+
+        let move_progress = (event.offsetX/event.srcElement.clientWidth)*duration;
+        music.currentTime=move_progress;
+ })
+   
+   music.addEventListener("ended", nextSong);
+   next.addEventListener('click', nextSong);
+   prev.addEventListener('click', prevSong);
+</script>
+</html>
+
+
+
+
+
